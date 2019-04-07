@@ -20,7 +20,8 @@ class Head {
         this.directionVertical = 0;
         this.listCoordsWay = [];
         
-        this.control()
+        this.control();
+        this.createTarget();
     }
 
     control() {
@@ -49,12 +50,14 @@ class Head {
 
     move() {
         this.listCoordsWay.push([this.x, this.y]);
-        if(this.listCoordsWay.length > this.width / this.speed + 1) this.listCoordsWay.shift();
+        if(this.listCoordsWay.length > this.width / this.speed + 3) this.listCoordsWay.shift();
 
         this.x += this.directionHorizontal;
         this.y += this.directionVertical;
 
         this.paymentDirections();
+
+        this.checkClash(this.target);
     }
 
     paymentDirections() {
@@ -79,6 +82,34 @@ class Head {
         }
     }
 
+    createTarget() {
+        this.target = new Target({
+            width: 20,
+            height: 20,
+            x: Math.random() * (canv.width - 0) + 0,
+            y: Math.random() * (canv.height - 0) + 0,
+            color: 'green'
+        });
+    }
+
+    checkClash(target) {
+        if(this.x + this.width >= target.x && this.x <= target.x + target.width) {
+            if(this.y + this.height >= target.y && this.y <= target.y + target.height) {
+                this.createTarget();
+                createPartBody(listElements[listElements.length - 1]);
+            }
+        }
+    }
+}
+
+class Target {
+    constructor(options) {
+        this.width = options.width;
+        this.height = options.height;
+        this.color = options.color;
+        this.x = options.x;
+        this.y = options.y;
+    }
 }
 
 class PartBody {
@@ -95,12 +126,14 @@ class PartBody {
 
     move() {
         this.listCoordsWay.push([this.x, this.y]);
-        if(this.listCoordsWay.length > this.width / this.speed + 1) this.listCoordsWay.shift();
-        
+        if(this.listCoordsWay.length > this.width / this.speed + 3) this.listCoordsWay.shift();
+
         this.x = this.guiding.listCoordsWay[0][0];
-        this.y = this.guiding.listCoordsWay[0][1];
+        this.y = this.guiding.listCoordsWay[0][1];   
     }
 }
+
+
 
 const head = new Head({
     width: 25,  
@@ -108,41 +141,35 @@ const head = new Head({
     color: 'red',
     x: 10,
     y: 10,
-    speed: 5
+    speed: 1
 });
 listElements.push(head);
 
-const partBody = new PartBody({
-    width: 25,  
-    height: 25,
-    color: '#000',
-    guiding: head,
-    speed: 5
-});
-listElements.push(partBody);
+function createPartBody(guiding) {
+    const partBody = new PartBody({
+        width: 25,  
+        height: 25,
+        color: '#000',
+        guiding: guiding,
+        speed: 1
+    });
+    listElements.push(partBody);
+}
+
+createPartBody(head);
 
 requestAnimationFrame(function draw() {
     ctx.clearRect(0, 0, canv.width, canv.height);
-    listElements.forEach(item => {
+    [...listElements, listElements[0].target].forEach(item => {
         ctx.beginPath();
         ctx.fillStyle = item.color;
         ctx.rect(item.x, item.y, item.width, item.height);
         ctx.fill();
-        item.move();
+        if(item.move) item.move();
+        
     });
 
     requestAnimationFrame(draw);
 });
 
 
-for (let i = 0; i < 10; i++) {
-    const partBody = new PartBody({
-        width: 25,  
-        height: 25,
-        color: '#000',
-        guiding: listElements[listElements.length - 1],
-        speed: 5
-    });
-
-    listElements.push(partBody);
-}
