@@ -50,7 +50,7 @@ class Head {
 
     move() {
         this.listCoordsWay.push([this.x, this.y]);
-        if(this.listCoordsWay.length > this.width / this.speed + 3) this.listCoordsWay.shift();
+        if(this.listCoordsWay.length > this.width / this.speed + 1) this.listCoordsWay.shift();
 
         this.x += this.directionHorizontal;
         this.y += this.directionVertical;
@@ -126,7 +126,7 @@ class PartBody {
 
     move() {
         this.listCoordsWay.push([this.x, this.y]);
-        if(this.listCoordsWay.length > this.width / this.speed + 3) this.listCoordsWay.shift();
+        if(this.listCoordsWay.length > this.width / this.speed + 1) this.listCoordsWay.shift();
 
         this.x = this.guiding.listCoordsWay[0][0];
         this.y = this.guiding.listCoordsWay[0][1];   
@@ -141,7 +141,7 @@ const head = new Head({
     color: 'red',
     x: 10,
     y: 10,
-    speed: 1
+    speed: 7
 });
 listElements.push(head);
 
@@ -151,11 +151,10 @@ function createPartBody(guiding) {
         height: 25,
         color: '#000',
         guiding: guiding,
-        speed: 1
+        speed: 7
     });
     listElements.push(partBody);
 }
-
 createPartBody(head);
 
 requestAnimationFrame(function draw() {
